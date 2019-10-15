@@ -2,6 +2,7 @@ package prova.prova.models;
 
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import prova.prova.enums.RoleEnum;
 
 import javax.persistence.Id;
 
@@ -9,25 +10,23 @@ import javax.persistence.Id;
  * @author Camila Siqueira
  */
 
-@Document("User")
+@Document("user")
 public class User {
 
-    public enum Role {
-        ADMIN,
-        USER;
-    }
-
-    @Id
     private String id;
     @Indexed
     private String email;
     private String name;
     private String password;
-    private long cpf;
-    private long tel;
-    private Role role;
+    private String cpf;
+    private String tel;
+    private RoleEnum role;
 
-    public User(String id, String email, String name, String password, long cpf, long tel, Role role) {
+    public User() {
+
+    }
+
+    public User(String id, String email, String name, String password, String cpf, String tel, RoleEnum role) {
         this.id = id;
         this.email = email;
         this.name = name;
@@ -37,6 +36,11 @@ public class User {
         this.role = role;
     }
 
+    public User(String id, String email, String name, String password, String cpf, String tel, String role) {
+        this(id, email, name, password, cpf, tel, RoleEnum.valueOf(role));
+    }
+
+    @Id
     public String getId() {
         return id;
     }
@@ -53,15 +57,15 @@ public class User {
         return password;
     }
 
-    public long getCpf() {
+    public String getCpf() {
         return cpf;
     }
 
-    public long getTel() {
+    public String getTel() {
         return tel;
     }
 
-    public Role getRole() {
+    public RoleEnum getRole() {
         return role;
     }
 
@@ -81,15 +85,22 @@ public class User {
         this.password = password;
     }
 
-    public void setCpf(long cpf) {
+    public void setCpf(String cpf) {
         this.cpf = cpf;
     }
 
-    public void setTel(long tel) {
+    public void setTel(String tel) {
         this.tel = tel;
     }
 
-    public void setRole(Role role) {
+    public void setRole(RoleEnum role) {
         this.role = role;
+    }
+
+    @Override
+    public String toString() {
+        return "User: {" +
+                "id:" + getId() +
+                ", email:" + getEmail();
     }
 }

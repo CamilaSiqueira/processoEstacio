@@ -4,6 +4,8 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 import prova.prova.models.User;
 
+import java.util.Optional;
+
 /**
  * @author Camila Siqueira
  */
@@ -11,5 +13,7 @@ import prova.prova.models.User;
 @Repository
 public interface UserRepository extends MongoRepository<User, String> {
 
-    User findByEmail(String email);
+    Optional<User> findByEmail(String email);
+
+    Optional<User> findByCpf(String cpf);
 }
