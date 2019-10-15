@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -13,6 +14,7 @@ import prova.prova.enums.RoleEnum;
 import prova.prova.models.User;
 import prova.prova.response.Response;
 import prova.prova.services.UserService;
+import prova.prova.utils.PasswordUtils;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -25,6 +27,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/user")
+@CrossOrigin(origins = "*")
 public class UserController {
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
@@ -80,6 +83,7 @@ public class UserController {
     }
 
     @PostMapping(value = "/save")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<Response<UserDto>> save(@Valid @RequestBody UserDto userDto, BindingResult result) {
         log.info("Saving user", userDto);
 
@@ -94,11 +98,13 @@ public class UserController {
             return ResponseEntity.badRequest().body(response);
         }
 
+        user.setPassword(PasswordUtils.generateBCrypt(user.getPassword()));
         response.setData(convertUserFromUserDto(userService.save(user)));
         return ResponseEntity.ok(response);
     }
 
     @PutMapping(value = "/update")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<Response<UserDto>> update(@Valid @RequestBody UserDto userDto, BindingResult result) {
         log.info("Updating user", userDto);
 
@@ -118,6 +124,7 @@ public class UserController {
     }
 
     @DeleteMapping(value = "/delete")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<Response<String>> deleteById(@RequestParam("id") String id) {
         log.info("Deleting user", id);
 
@@ -153,6 +160,11 @@ public class UserController {
 
         if (!userOP.isPresent()) {
             result.addError(new ObjectError("user", "User not found."));
+        }
+
+        //Encrypt the password if is different
+        if (!userOP.get().getPassword().equals(user.getPassword())) {
+            user.setPassword(PasswordUtils.generateBCrypt(user.getPassword()));
         }
     }
 

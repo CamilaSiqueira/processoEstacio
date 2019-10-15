@@ -10,6 +10,7 @@ import prova.prova.controllers.UserController;
 import prova.prova.enums.RoleEnum;
 import prova.prova.models.User;
 import prova.prova.services.UserService;
+import prova.prova.utils.PasswordUtils;
 
 import java.util.Optional;
 
@@ -34,8 +35,7 @@ public class Initializer implements ApplicationListener<ContextRefreshedEvent> {
 
         if (!opUser.isPresent()) {
             log.info("Saving user admin");
-//            user = new User(id, "admin@admin.com", "Admin", PasswordUtils.generateBCrypt("123456"), 11111111111l, 21999028636l, User.Role.ADMIN);
-            user = new User(id, "admin@admin.com", "Admin", "123456", "11111111111", "21999028636", RoleEnum.ADMIN);
+            user = new User(id, "admin@admin.com", "Admin", PasswordUtils.generateBCrypt("123456"), "11111111111", "21999028636l", RoleEnum.ROLE_ADMIN);
             userService.save(user);
         }
 

@@ -1,5 +1,6 @@
 package prova.prova.utils.constraint;
 
+import prova.prova.utils.constraint.validators.IdCheckValidator;
 import prova.prova.utils.constraint.validators.RoleCheckValidator;
 
 import javax.validation.Constraint;
@@ -10,12 +11,12 @@ import java.lang.annotation.*;
  * @author Camila Siqueira
  */
 
-@Target({ElementType.FIELD, ElementType.METHOD})
+@Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = RoleCheckValidator.class)
+@Constraint(validatedBy = IdCheckValidator.class)
 @Documented
-public @interface RoleCheck {
-    String message() default "Invalid user role.";
+public @interface IdCheck {
+    String message() default "Invalid user ID.";
 
     Class<?>[] groups() default {};
 

@@ -4,14 +4,17 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import prova.prova.enums.RoleEnum;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
+import java.io.Serializable;
 
 /**
  * @author Camila Siqueira
  */
 
 @Document("user")
-public class User {
+public class User implements Serializable {
 
     private String id;
     @Indexed
@@ -65,6 +68,7 @@ public class User {
         return tel;
     }
 
+    @Enumerated(EnumType.STRING)
     public RoleEnum getRole() {
         return role;
     }
