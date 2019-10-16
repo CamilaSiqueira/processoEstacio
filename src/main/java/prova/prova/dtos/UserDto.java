@@ -49,8 +49,6 @@ public class UserDto {
     }
 
     @NotEmpty(message = "Senha deve ser preenchida.")
-    @Length(min = 6, max = 6, message = "Senha deve conter seis dígitos numéricos.")
-    @Digits(integer = 6, fraction = 0, message = "Senha deve conter apenas valores numéricos.")
     public String getPassword() {
         return password;
     }

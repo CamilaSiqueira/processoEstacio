@@ -35,6 +35,11 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    /**
+     * List all users registered
+     *
+     * @return List<UserDto>
+     */
     @GetMapping(value = "")
     public ResponseEntity<Response<List<UserDto>>> findAll() {
         log.info("Finding all users");
@@ -48,6 +53,12 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Get a user by received id
+     *
+     * @param id's user
+     * @return user data
+     */
     @GetMapping(value = "/{id}")
     public ResponseEntity<Response<UserDto>> findUserById(@PathVariable("id") String id) {
         log.info("Searching user by id", id);
@@ -65,6 +76,12 @@ public class UserController {
         return ResponseEntity.badRequest().body(response);
     }
 
+    /**
+     * Get a user by received email
+     *
+     * @param email's user
+     * @return user data
+     */
     @GetMapping(value = "/email/{email}")
     public ResponseEntity<Response<UserDto>> findUserByEmail(@PathVariable("email") String email) {
         log.info("Finding user by email", email);
@@ -82,6 +99,14 @@ public class UserController {
         return ResponseEntity.badRequest().body(response);
     }
 
+    /**
+     * Register a user.
+     * Only for admin role.
+     *
+     * @param userDto
+     * @param result
+     * @return registered user
+     */
     @PostMapping(value = "/save")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<Response<UserDto>> save(@Valid @RequestBody UserDto userDto, BindingResult result) {
@@ -103,6 +128,14 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Update a user.
+     * Only for admin role.
+     *
+     * @param userDto
+     * @param result
+     * @return updated user
+     */
     @PutMapping(value = "/update")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<Response<UserDto>> update(@Valid @RequestBody UserDto userDto, BindingResult result) {
@@ -123,6 +156,13 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Delete a user by id.
+     * Only for admin role.
+     *
+     * @param id
+     * @return ok if the user was deleted
+     */
     @DeleteMapping(value = "/delete")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<Response<String>> deleteById(@RequestParam("id") String id) {
@@ -141,6 +181,13 @@ public class UserController {
         return ResponseEntity.badRequest().body(response);
     }
 
+    /**
+     * Verify if new user data is not registered for another user.
+     * Include errors if the data already exists in database.
+     *
+     * @param user
+     * @param result
+     */
     private void validateExistingData(UserDto user, BindingResult result) {
         this.userService.findByCpf(user.getCpf())
                 .ifPresent(func -> result.addError(new ObjectError("cpf", "CPF já cadastrado.")));
@@ -149,6 +196,12 @@ public class UserController {
                 .ifPresent(func -> result.addError(new ObjectError("email", "Email já cadastrado.")));
     }
 
+    /**
+     * Validate user for updating, encrypting password if it's changed.
+     *
+     * @param user
+     * @param result
+     */
     private void validateUser(UserDto user, BindingResult result) {
         if (user.getId() == null || user.getId().isEmpty()) {
             result.addError(new ObjectError("user", "User not informed.."));
@@ -168,7 +221,13 @@ public class UserController {
         }
     }
 
-
+    /**
+     * Converts UserDto in User.
+     *
+     * @param userDto to be converted in user
+     * @param result
+     * @return user
+     */
     private User convertUserDtoFromUser(UserDto userDto, BindingResult result) {
         if (userDto.getRole() != null) {
             userDto.setRole(userDto.getRole().toUpperCase());
@@ -182,6 +241,12 @@ public class UserController {
         return null;
     }
 
+    /**
+     * Converts User in UserDto.
+     *
+     * @param user to be converted in userDto
+     * @return userDto
+     */
     private UserDto convertUserFromUserDto(User user) {
         return new UserDto(user.getId(), user.getEmail(), user.getName(), user.getPassword(),
                 user.getCpf(), user.getTel(), user.getRole().name());

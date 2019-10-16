@@ -1,8 +1,11 @@
 package prova.prova.enums;
 
 /**
+ * Enum represents the role of one user.
+ *
  * @author Camila Siqueira
  */
+
 public enum RoleEnum {
     ROLE_ADMIN("ROLE_ADMIN"),
     ROLE_USER("ROLE_USER");
