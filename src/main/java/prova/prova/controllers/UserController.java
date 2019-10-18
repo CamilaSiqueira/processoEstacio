@@ -163,9 +163,9 @@ public class UserController {
      * @param id
      * @return ok if the user was deleted
      */
-    @DeleteMapping(value = "/delete")
+    @DeleteMapping(value = "/delete/{id}")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public ResponseEntity<Response<String>> deleteById(@RequestParam("id") String id) {
+    public ResponseEntity<Response<String>> deleteById(@PathVariable("id") String id) {
         log.info("Deleting user", id);
 
         Optional<User> user = userService.findById(id);

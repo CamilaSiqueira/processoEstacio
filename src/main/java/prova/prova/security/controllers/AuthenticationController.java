@@ -23,6 +23,7 @@ import prova.prova.services.UserService;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/auth")
@@ -57,7 +58,6 @@ public class AuthenticationController {
     @PostMapping
     public ResponseEntity<Response<TokenDto>> generateJwtToken(@Valid @RequestBody JwtAuthenticationDto authenticationDto
             , BindingResult result) throws AuthenticationException {
-
         Response<TokenDto> response = new Response<TokenDto>();
 
         if (result.hasErrors()) {
@@ -67,15 +67,14 @@ public class AuthenticationController {
             return ResponseEntity.badRequest().body(response);
         }
 
-        if (authenticationDto.getEmail() == null || authenticationDto.getEmail().isEmpty()) {
-            Optional<User> userOP = userService.findById(authenticationDto.getId());
+        if (!isValid(authenticationDto.getEmail())) {
+            Optional<User> userOP = userService.findById(authenticationDto.getEmail());
 
             if (userOP.isPresent()) {
                 authenticationDto.setEmail(userOP.get().getEmail());
+                authenticationDto.setId(userOP.get().getId());
             }
         }
-
-        System.err.println("Email " + authenticationDto.getEmail());
 
         log.info("Generating token for email: {}.", authenticationDto.getEmail());
         Authentication authentication = authenticationManager.authenticate(
@@ -118,5 +117,19 @@ public class AuthenticationController {
         String refreshedToken = jwtTokenUtil.refreshToken(token.get());
         response.setData(new TokenDto(refreshedToken));
         return ResponseEntity.ok(response);
+    }
+
+    private boolean isValid(String email) {
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\." +
+                "[a-zA-Z0-9_+&*-]+)*@" +
+                "(?:[a-zA-Z0-9-]+\\.)+[a-z" +
+                "A-Z]{2,7}$";
+
+        Pattern pat = Pattern.compile(emailRegex);
+        if (email == null) {
+            return false;
+        }
+
+        return pat.matcher(email).matches();
     }
 }

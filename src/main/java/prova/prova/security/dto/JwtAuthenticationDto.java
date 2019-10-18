@@ -15,7 +15,7 @@ public class JwtAuthenticationDto {
     public JwtAuthenticationDto() {
     }
 
-    @Email(message = "Invalid email.")
+    @NotEmpty(message = "Identification can't be empty")
     public String getEmail() {
         return email;
     }
